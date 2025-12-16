@@ -118,7 +118,7 @@ const config = {
           destination: 'https://perp.pancakeswap.finance/perp/:path*',
         },
         {
-          source: '/wallet-api',  // Your app's proxy path (e.g., /api/proxy/v1/wallets)
+          source: '/wallet-api/:path*',  // Your app's proxy path (e.g., /api/proxy/v1/wallets)
           destination: 'https://wallet-api.pancakeswap.com/:path*',  // Forward to the external API
         },
       ],
