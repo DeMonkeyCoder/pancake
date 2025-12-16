@@ -226,7 +226,11 @@ export const SendAssetForm: React.FC<SendAssetFormProps> = ({ asset, onViewState
         <ToastDescriptionWithTx txHash={receipt.transactionHash}>
           {t('Your %symbol% has been sent to %address%', {
             symbol: currency?.symbol,
-            address: `${addressOrName?.slice(0, 8)}...${addressOrName?.slice(-8)}`,
+            address: `${
+              addressOrName && isAddress(addressOrName)
+                ? `${addressOrName.slice(0, 8)}...${addressOrName.slice(-8)}`
+                : addressOrName
+            }`,
           })}
         </ToastDescriptionWithTx>,
       )
