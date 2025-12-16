@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/wallet-api/:path*",
+      "destination": "https://wallet-api.pancakeswap.com/:path*"
+    },
+    {
+      "source": "/wallet-api/:path*/",
+      "destination": "https://wallet-api.pancakeswap.com/:path*/"
+    }
+  ]
+}
