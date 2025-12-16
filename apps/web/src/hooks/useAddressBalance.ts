@@ -39,7 +39,7 @@ interface UseAddressBalanceOptions {
   enabled?: boolean
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_WALLET_API_BASE_URL || 'https://wallet-api.pancakeswap.com/v1/balances'
+const API_BASE_URL = process.env.NEXT_PUBLIC_WALLET_API_BASE_URL || '/wallet-api/v1/balances'
 
 function isNative(address: string): boolean {
   return address === ZERO_ADDRESS
