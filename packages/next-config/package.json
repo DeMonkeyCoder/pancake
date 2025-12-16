@@ -11,7 +11,7 @@
     "next": "catalog:"
   },
   "devDependencies": {
-    "next": "catalog:"
+    "next": "15.5.8"
   },
   "exports": {
     "./withWebSecurityHeaders": {
