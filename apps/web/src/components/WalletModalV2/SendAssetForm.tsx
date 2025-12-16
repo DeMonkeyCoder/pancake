@@ -37,7 +37,8 @@ import { SendGiftToggle } from 'views/Gift/components/SendGiftToggle'
 import { CHAINS_WITH_GIFT_CLAIM } from 'views/Gift/constants'
 import { SendGiftContext, useSendGiftContext } from 'views/Gift/providers/SendGiftProvider'
 import { useUserInsufficientBalanceLight } from 'views/SwapSimplify/hooks/useUserInsufficientBalance'
-import { useAccount, usePublicClient, useSendTransaction } from 'wagmi'
+import { useAccount, usePublicClient, useSendTransaction, useEnsAddress } from 'wagmi'
+import { normalize } from 'viem/ens'
 import { ActionButton } from './ActionButton'
 import SendTransactionFlow from './SendTransactionFlow'
 import { ViewState } from './type'
@@ -98,8 +99,9 @@ export const SendAssetForm: React.FC<SendAssetFormProps> = ({ asset, onViewState
   const isSendGiftSupported = isSendGift && isGiftSupported
 
   const { t } = useTranslation()
-  const [address, setAddress] = useState<string | null>(null)
-  const debouncedAddress = useDebounce(address, 500)
+  const [addressOrName, setAddressOrName] = useState<string | null>(null)
+  // Use debounced address for validation to avoid checking on every keystroke
+  const debouncedAddressOrName = useDebounce(addressOrName, 500)
   const [amount, setAmount] = useState('')
   const [addressError, setAddressError] = useState('')
   const [estimatedFee, setEstimatedFee] = useState<string | null>(null)
@@ -112,6 +114,15 @@ export const SendAssetForm: React.FC<SendAssetFormProps> = ({ asset, onViewState
   const { toastSuccess } = useToast()
   const { fetchWithCatchTxError, loading: attemptingTxn } = useCatchTxError()
   const { includeStarterGas, nativeAmount, isUserInsufficientBalance } = useSendGiftContext()
+
+  const { data: resolvedEnsAddress, isLoading: isEnsLoading } = useEnsAddress({
+    name: normalize(debouncedAddressOrName ?? ''),
+    chainId: ChainId.ETHEREUM,
+  })
+  const address = useMemo(
+    () => (!isEnsLoading && resolvedEnsAddress) || debouncedAddressOrName,
+    [isEnsLoading, resolvedEnsAddress, debouncedAddressOrName],
+  )
 
   // Get native currency for fee calculation
   const nativeCurrency = useNativeCurrency(asset.chainId)
@@ -215,18 +226,18 @@ export const SendAssetForm: React.FC<SendAssetFormProps> = ({ asset, onViewState
         <ToastDescriptionWithTx txHash={receipt.transactionHash}>
           {t('Your %symbol% has been sent to %address%', {
             symbol: currency?.symbol,
-            address: `${address?.slice(0, 8)}...${address?.slice(-8)}`,
+            address: `${addressOrName?.slice(0, 8)}...${addressOrName?.slice(-8)}`,
           })}
         </ToastDescriptionWithTx>,
       )
       // Reset form after successful transaction
       setAmount('')
-      setAddress('')
+      setAddressOrName('')
     }
 
     return receipt
   }, [
-    address,
+    addressOrName,
     amount,
     erc20Contract,
     isNativeToken,
@@ -240,20 +251,19 @@ export const SendAssetForm: React.FC<SendAssetFormProps> = ({ asset, onViewState
 
   const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target
-    setAddress(value)
+    setAddressOrName(value)
   }
 
-  // Use debounced address for validation to avoid checking on every keystroke
   useEffect(() => {
-    if (debouncedAddress && !isAddress(debouncedAddress)) {
+    if (address && !isAddress(address)) {
       setAddressError(t('Invalid wallet address'))
     } else {
       setAddressError('')
     }
-  }, [debouncedAddress, t])
+  }, [debouncedAddressOrName, t, resolvedEnsAddress, isEnsLoading])
 
   const handleClearAddress = () => {
-    setAddress('')
+    setAddressOrName('')
     setAddressError('')
   }
 
@@ -356,13 +366,13 @@ export const SendAssetForm: React.FC<SendAssetFormProps> = ({ asset, onViewState
                 <AddressInputWrapper>
                   <Box position="relative">
                     <Input
-                      value={address ?? ''}
+                      value={addressOrName ?? ''}
                       onChange={handleAddressChange}
-                      placeholder="Recipient address"
+                      placeholder="Recipient name / address"
                       style={{ height: '64px' }}
                       isError={Boolean(addressError)}
                     />
-                    {address && (
+                    {addressOrName && (
                       <ClearButton
                         scale="sm"
                         onClick={handleClearAddress}

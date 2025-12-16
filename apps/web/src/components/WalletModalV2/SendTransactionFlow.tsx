@@ -9,6 +9,7 @@ import {
   ColumnCenter,
   Flex,
   FlexGap,
+  Image,
   Link,
   Spinner,
   Text,
@@ -24,6 +25,7 @@ import { useSwitchNetwork } from 'hooks/useSwitchNetwork'
 import { useCallback, useMemo } from 'react'
 import { styled } from 'styled-components'
 import { getBlockExploreLink, getBlockExploreName } from 'utils'
+import { useDomainNameForAddress } from 'hooks/useDomain'
 
 const Wrapper = styled.div`
   width: 100%;
@@ -92,6 +94,8 @@ export function ConfirmTransactionContent({
     return tryParseAmount(amount, currency)
   }, [amount, asset])
 
+  const { domainName, avatar } = useDomainNameForAddress(recipient)
+
   return (
     <Wrapper>
       <Section>
@@ -109,7 +113,15 @@ export function ConfirmTransactionContent({
           <Flex justifyContent="space-between" width="100%" mb="8px" alignItems="flex-start">
             <Text color="textSubtle">{t('To')}</Text>
             <Box maxWidth="70%" style={{ wordBreak: 'break-all', textAlign: 'right' }}>
-              <Text>{recipient}</Text>
+              {domainName && (
+                <Flex>
+                  {avatar && <Image src={avatar} width={32} height={32} mr="8px" alt="ENS-avatar" />}
+                  <Text>{domainName}</Text>
+                </Flex>
+              )}
+              <Text>
+                {domainName ? `${recipient.substring(0, 6)}...${recipient.substring(recipient.length - 4)}` : recipient}
+              </Text>
             </Box>
           </Flex>
 
