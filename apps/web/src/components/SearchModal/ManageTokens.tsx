@@ -108,7 +108,7 @@ export default function ManageTokens({
     )
   }, [userAddedTokens, chainId, removeToken])
 
-  const isAddressValid = searchQuery === '' || safeGetAddress(searchQuery)
+  const isAddressValid = searchQuery === '' || Boolean(searchToken) || safeGetAddress(searchQuery)
 
   return (
     <Wrapper>
@@ -118,7 +118,7 @@ export default function ManageTokens({
             <Input
               id="token-search-input"
               scale="lg"
-              placeholder="0x0000"
+              placeholder="0x0000 or ENS"
               value={searchQuery}
               autoComplete="off"
               ref={inputRef as RefObject<HTMLInputElement>}
