@@ -303,7 +303,6 @@ function CurrencySearch({
               onInput={handleOnInput}
               compact
             />
-
             {onSettingsClick && (
               <IconButton onClick={onSettingsClick} variant="text" scale="sm" ml="8px">
                 <BaseWrapper style={{ padding: '6px' }}>

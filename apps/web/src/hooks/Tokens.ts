@@ -19,6 +19,8 @@ import {
   useWarningTokenList,
 } from 'state/lists/hooks'
 import { safeGetAddress } from 'utils'
+import { useEnsAddress } from 'wagmi'
+import { normalize } from 'viem/ens'
 import useUserAddedTokens, { useUserAddedTokensByChainIds } from '../state/user/hooks/useUserAddedTokens'
 import { useActiveChainId } from './useActiveChainId'
 import useNativeCurrency from './useNativeCurrency'
@@ -221,19 +223,24 @@ export function useIsUserAddedToken(currency: Currency | undefined | null, chain
   return !!userAddedTokens.find((token) => currency?.equals(token))
 }
 
-export function useToken(tokenAddress?: string, chainId?: number): ERC20Token | undefined | null {
+export function useToken(tokenAddressOrENS?: string, chainId?: number): ERC20Token | undefined | null {
   const { chainId: activeChainId } = useActiveChainId()
   const chainIdToUse = chainId ?? activeChainId
-  return useTokenByChainId(tokenAddress, chainIdToUse)
+  return useTokenByChainId(tokenAddressOrENS, chainIdToUse)
 }
 // undefined if invalid or does not exist
 // null if loading
 // otherwise returns the token
-export function useTokenByChainId(tokenAddress?: string, chainId?: number): ERC20Token | undefined | null {
+export function useTokenByChainId(tokenAddressOrENS?: string, chainId?: number): ERC20Token | undefined | null {
   const unsupportedTokens = useUnsupportedTokens()
   const tokens = useAllTokensByChainIds(chainId ? [chainId] : [])
 
-  const address = safeGetAddress(tokenAddress)
+  const { data: tokenAddressFromENS } = useEnsAddress({
+    name: normalize(tokenAddressOrENS ?? ''),
+    chainId: ChainId.ETHEREUM,
+  })
+
+  const address = safeGetAddress(tokenAddressFromENS ?? tokenAddressOrENS)
 
   const token: ERC20Token | undefined = address && chainId ? tokens[chainId][address] : undefined
 
