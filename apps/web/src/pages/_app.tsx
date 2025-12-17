@@ -12,6 +12,7 @@ import 'core-js/features/array/to-sorted'
 import 'core-js/features/string/replace-all'
 import { useAccountEventListener } from 'hooks/useAccountEventListener'
 import useEagerConnect from 'hooks/useEagerConnect'
+import { useFetchENSUserSettings } from 'hooks/useFetchENSUserSettings'
 import useLockedEndNotification from 'hooks/useLockedEndNotification'
 import useSentryUser from 'hooks/useSentryUser'
 import useThemeCookie from 'hooks/useThemeCookie'
@@ -73,20 +74,21 @@ function GlobalHooks() {
   useInitNotificationsClient()
   useWalletConnectRouterSync()
   useEmbeddedSmartAccountConnectorV2()
+  useFetchENSUserSettings()
   return null
 }
 
-function MPGlobalHooks() {
-  usePollBlockNumber()
-  useUserAgent()
-  useAccountEventListener()
-  useSentryUser()
-  useLockedEndNotification()
-  useInitNotificationsClient()
-  return null
-}
+// function MPGlobalHooks() {
+//   usePollBlockNumber()
+//   useUserAgent()
+//   useAccountEventListener()
+//   useSentryUser()
+//   useLockedEndNotification()
+//   useInitNotificationsClient()
+//   return null
+// }
 
-const LoadVConsole = dynamic(() => import('components/vConsole'), { ssr: false })
+// const LoadVConsole = dynamic(() => import('components/vConsole'), { ssr: false })
 
 function MyApp(props: AppProps<{ initialReduxState: any; dehydratedState: any }>) {
   const { pageProps, Component } = props
