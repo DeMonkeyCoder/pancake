@@ -22,6 +22,7 @@ import { SwapUIV2 } from '@pancakeswap/widgets-internal'
 import CurrencyLogo from 'components/Logo/CurrencyLogo'
 import { ToastDescriptionWithTx } from 'components/Toast'
 import { ASSET_CDN } from 'config/constants/endpoints'
+import { useActiveChainId } from 'hooks/useActiveChainId'
 import { BalanceData } from 'hooks/useAddressBalance'
 import useCatchTxError from 'hooks/useCatchTxError'
 import { useERC20 } from 'hooks/useContract'
@@ -99,6 +100,7 @@ export const SendAssetForm: React.FC<SendAssetFormProps> = ({ asset, onViewState
   const isSendGiftSupported = isSendGift && isGiftSupported
 
   const { t } = useTranslation()
+  const { chainId } = useActiveChainId()
   const [addressOrName, setAddressOrName] = useState<string | null>(null)
   // Use debounced address for validation to avoid checking on every keystroke
   const debouncedAddressOrName = useDebounce(addressOrName, 500)
@@ -117,7 +119,7 @@ export const SendAssetForm: React.FC<SendAssetFormProps> = ({ asset, onViewState
 
   const { data: resolvedEnsAddress, isLoading: isEnsLoading } = useEnsAddress({
     name: normalize(debouncedAddressOrName ?? ''),
-    chainId: ChainId.ETHEREUM,
+    chainId: chainId === ChainId.SEPOLIA ? ChainId.SEPOLIA : ChainId.ETHEREUM,
   })
   const address = useMemo(
     () => (!isEnsLoading && resolvedEnsAddress) || debouncedAddressOrName,
