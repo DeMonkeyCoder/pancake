@@ -10,15 +10,14 @@ export function useIsExpertModeSetByUser() {
 }
 
 export function useExpertMode() {
-  const [expertMode, setExpertMode, ...rest] = useAtom(userExpertModeAtom)
+  const [expertMode, setExpertMode] = useAtom(userExpertModeAtom)
   const [, setIsExpertModeSetByUser] = useIsExpertModeSetByUser()
   return [
     Boolean(expertMode),
-    (expertMode: boolean, setByUser = true) => {
+    (expertMode: Parameters<typeof setExpertMode>[0], setByUser = true) => {
       setExpertMode(expertMode)
       setIsExpertModeSetByUser(setByUser)
     },
-    ...rest,
   ] as const
 }
 
