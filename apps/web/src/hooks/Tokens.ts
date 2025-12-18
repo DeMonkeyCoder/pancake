@@ -237,7 +237,7 @@ export function useTokenByChainId(tokenAddressOrENS?: string, chainId?: number):
 
   const { data: tokenAddressFromENS } = useEnsAddress({
     name: normalize(tokenAddressOrENS ?? ''),
-    chainId: ChainId.ETHEREUM,
+    chainId: chainId === ChainId.SEPOLIA ? ChainId.SEPOLIA : ChainId.ETHEREUM,
   })
 
   const address = safeGetAddress(tokenAddressFromENS ?? tokenAddressOrENS)
