@@ -243,6 +243,7 @@ export const SendAssetForm: React.FC<SendAssetFormProps> = ({ asset, onViewState
 
     return receipt
   }, [
+    address,
     addressOrName,
     amount,
     erc20Contract,
@@ -266,7 +267,7 @@ export const SendAssetForm: React.FC<SendAssetFormProps> = ({ asset, onViewState
     } else {
       setAddressError('')
     }
-  }, [debouncedAddressOrName, t, resolvedEnsAddress, isEnsLoading])
+  }, [address, t])
 
   const handleClearAddress = () => {
     setAddressOrName('')
